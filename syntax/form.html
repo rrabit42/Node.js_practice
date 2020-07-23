@@ -1,0 +1,16 @@
+<form action="http://localhost:300/process_create" method="post">
+  <p><input type="text" name="title"></p>
+  <p>
+    <textarea name="description"></textarea>
+  </p>
+
+  <p>
+    <input type="submit">
+  </p>
+</form>
+
+
+{% comment %}
+create, update, delete는 post로, 서버로 데이터를 보내니까 여러 보안 문제가 있음
+read는 url로 데이터를 전송하는 get, 서버로부터 데이터를 가져올 뿐
+{% endcomment %}
