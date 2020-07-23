@@ -65,8 +65,14 @@ var app = http.createServer(function(request,response){
             var list = templateList(filelist);
             var template = templateHTML(title, list, `
             <h2>${title}</h2>
-            ${description}
-            `, `<a href="/create">create</a> <a href="/update?id=${title}">update</a>`);
+            ${description}`,
+            ` <a href="/create">create</a>
+              <a href="/update?id=${title}">update</a>
+              <form action="delete_process" method="post" onsubmit="">
+                <input type="hidden" name="id" value="${title}">
+                <input type="submit" value="delete">
+              </form>
+            `);
             response.writeHead(200);
             response.end(template);
           });
@@ -161,6 +167,20 @@ var app = http.createServer(function(request,response){
             response.end();
           });
         });
+      });
+    }
+    else if(pathname === '/delete_process'){
+      var body = '';
+      request.on('data', function(data){
+        body += data;
+      });
+      request.on('end', function(){
+        var post = qs.parse(body); // 정보를 객체화
+        var id = post.id
+        fs.unlink(`data/${id}`, function(error){
+          response.writeHead(302,{Location: `/`});
+          response.end();
+        })
       });
     }
     else {
