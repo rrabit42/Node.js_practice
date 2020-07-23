@@ -51,3 +51,17 @@ _**npm install pm2 -g**_
 * ```pm2 monit``` : 현재 pm2에 의해 실행되고 있는 프로그램들 보고 관리 가능, q누르면 나감  
 * ```pm2 list``` : 현재 실행되고 있는 프로젝트 list  
 * ```pm2 stop {list에서 나온 프로그램의 name}``` : 프로그램 끌 때  
+
+_**npm init**_  
+우리들의 app을 npm으로 관리하기 위한 절차가 시작. package name은 프로젝트 이름으로 그냥 엔터, 자신의 프로젝트를 npm으로 관리하는 거니까  
+그럼 ```package.json```이라는 파일이 생김, 프로젝트에 대한 정보가 생김  
+
+_**npm install -S sanitize-html**_  
+* -S : 우리가 진행하는 프로젝트에서 진행할 작은 조각 프로그램, 부품)으로 깔게 됨  
+
+```node_modules```라는 디렉토리가 생기는데 그 안에 sanitize-html도 확인 가능  
+```package.json```에서 **dependencies** 항목에 sanitize-html 추가됨
+* dependencies: 우리들의 app이 어떤 외부 소프트웨어들에 의존하는지 보여줌  
+
+Q. 우리는 sanitize-html만 깔았는데 node_modules에 있는 많은 디렉토리들은?  
+A. 그건 sanitize-html이 의존하고 있는 다른 소프트웨어들, 또 그것들이 다른 걸 의존하고 .... 이걸 npm이 관리하고 있는 것!  
