@@ -13,6 +13,7 @@ function templateHTML(title, list, body){
     <body>
       <h1><a href="/">WEB</a></h1>
       ${list}
+      <a href="/create">create</a>
       ${body}
     </body>
     </html>
@@ -33,7 +34,7 @@ function templateList(filelist){
 var app = http.createServer(function(request,response){
     var _url = request.url; // 쿼리스트링이 여기 들어감, url을 파싱해서 쿼리스트링을 추출해내면 됨
     var queryData = url.parse(_url, true).query; // queryData에 담겨있는 값은 객체 ex. { id:HTML } 여기서 queryData.id==HTML
-    var pathname = url.parse(_url, true).pathname // pathname으로는 홈과 각각 페이지를 구분 X. 다 pathname이 / 니까.
+    var pathname = url.parse(_url, true).pathname // pathname으로는 홈과 각각 페이지를 구분 X. 다 pathname이 / 니까. 왜냐하면 query string은 pathname에 포함이 안돼서!
 
     /*
     url.parse(_url,true)에서 URL 객체가 나오는데
@@ -69,6 +70,26 @@ var app = http.createServer(function(request,response){
           });
         });
       }
+    }
+    else if(pathname === '/create'){
+      fs.readdir('./data', function(error, filelist){
+        var title = 'WEB - create'
+        var list = templateList(filelist);
+        var template = templateHTML(title, list, `
+          <form action="http://localhost:300/process_create" method="post">
+          <p><input type="text" name="title" placeholder="title"></p>
+          <p>
+            <textarea name="description" placeholder="description"></textarea>
+          </p>
+        
+          <p>
+            <input type="submit">
+          </p>
+        </form>
+        `);
+        response.writeHead(200);
+        response.end(template);
+      });
     }
     else {
       response.writeHead(404); // 응답헤더 작성, writeHead(statusCode, object)
