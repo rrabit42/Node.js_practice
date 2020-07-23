@@ -11,6 +11,7 @@ console.log('C');
 console.log('A');
 // return 값을 주는 함수는 X
 // 노드가 sample.txt 읽는 작업이 끝나면, 노드가 콜백함수를 실행시킴. 첫번째 인자에는 에러가 있다면 에러를 넘겨주고(err), 두번째 파라미터에는 파일의 내용을 인자로서 넘겨주기로 약속되어 있음
+// 따라서 파일을 읽은 후 처리해야 할 작업들을 콜백 함수에 적어두면 됨
 fs.readFile('syntax/sample.txt', 'utf8', function(err, result){
   console.log(result);
 });
