@@ -3,6 +3,7 @@ var fs = require('fs');
 var url = require('url'); // url이라는 모듈이 필요함, 그 모듈은 url 변수를 통해서 이용할 것이다.
 var qs = require('querystring');
 var template = require('./lib/template.js');
+var path = require('path');
 
 // node.js로 웹브라우저가 접속이 들어올 때 마다 콜백함수(밑에 익명함수)를 node.js가 호출함, request는 요청할 때 웹브라우저가 보낸 정보, response는 웹브라우저한테 우리가 전달할 정보
 var app = http.createServer(function(request,response){
@@ -32,8 +33,12 @@ var app = http.createServer(function(request,response){
       }
       else{
         fs.readdir('./data', function(error, filelist){
-          // queryData.id가 있을 때
-          fs.readFile(`data/${queryData.id}`, 'utf8', function(err, description){
+          // ../ 차단됨! base만 가져오니까
+          var filteredId = path.parse(queryData.id).base;
+
+          // 여기서 공격자가 url query string으로 id=../password.js를 주면 data/../password.js를 읽게 됨!! 그 js의 모든 소스가 노출되어 버림
+          // 그리고 ../../를 반복해서 우리 컴퓨터를 모두 읽을 수 있게 됨!
+          fs.readFile(`data/${filteredId}`, 'utf8', function(err, description){
             var title = queryData.id
             var list = template.list(filelist);
             var html = template.html(title, list, `
@@ -101,7 +106,8 @@ var app = http.createServer(function(request,response){
     }
     else if(pathname === '/update'){
       fs.readdir('./data', function(error, filelist){
-        fs.readFile(`data/${queryData.id}`, 'utf8', function(err, description){
+        var filteredId = path.parse(queryData.id).base;
+        fs.readFile(`data/${filteredId}`, 'utf8', function(err, description){
           var title = queryData.id
           var list = template.list(filelist);
           var html = template.html(title, list, `
@@ -150,7 +156,8 @@ var app = http.createServer(function(request,response){
       request.on('end', function(){
         var post = qs.parse(body); // 정보를 객체화
         var id = post.id
-        fs.unlink(`data/${id}`, function(error){
+        var filteredId = path.parse(id).base;
+        fs.unlink(`data/${filteredId}`, function(error){
           response.writeHead(302,{Location: `/`});
           response.end();
         })
