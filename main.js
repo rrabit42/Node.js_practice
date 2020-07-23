@@ -2,36 +2,7 @@ var http = require('http');
 var fs = require('fs');
 var url = require('url'); // url이라는 모듈이 필요함, 그 모듈은 url 변수를 통해서 이용할 것이다.
 var qs = require('querystring');
-
-var template = {
-  html: function(title, list, body, control){
-    return `
-      <!doctype html>
-        <html>
-        <head>
-          <title>WEB1 - ${title}</title>
-          <meta charset="utf-8">
-        </head>
-        <body>
-          <h1><a href="/">WEB</a></h1>
-          ${list}
-          ${control}
-          ${body}
-        </body>
-        </html>
-      `;
-  },
-  list: function(filelist){
-    var list = '<ul>';
-    var i = 0;
-    while(i < filelist.length){
-      list += `<li><a href="/?id=${filelist[i]}">${filelist[i]}</a></li>`;
-      i += 1;
-    }
-    list = list + '</ul>';
-    return list;
-  }
-}
+var template = require('./lib/template.js');
 
 // node.js로 웹브라우저가 접속이 들어올 때 마다 콜백함수(밑에 익명함수)를 node.js가 호출함, request는 요청할 때 웹브라우저가 보낸 정보, response는 웹브라우저한테 우리가 전달할 정보
 var app = http.createServer(function(request,response){
