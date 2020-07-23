@@ -4,6 +4,7 @@ var url = require('url'); // url이라는 모듈이 필요함, 그 모듈은 url
 var qs = require('querystring');
 var template = require('./lib/template.js');
 var path = require('path');
+var sanitizeHtml = require('sanitize-html');
 
 // node.js로 웹브라우저가 접속이 들어올 때 마다 콜백함수(밑에 익명함수)를 node.js가 호출함, request는 요청할 때 웹브라우저가 보낸 정보, response는 웹브라우저한테 우리가 전달할 정보
 var app = http.createServer(function(request,response){
@@ -40,14 +41,19 @@ var app = http.createServer(function(request,response){
           // 그리고 ../../를 반복해서 우리 컴퓨터를 모두 읽을 수 있게 됨!
           fs.readFile(`data/${filteredId}`, 'utf8', function(err, description){
             var title = queryData.id
+            var sanitizedTitle = sanitizeHtml(title);
+            var sanitizeDescription = sanitizeHtml(description, {
+              allowedTags: ['h1']
+            });
+
             var list = template.list(filelist);
-            var html = template.html(title, list, `
-            <h2>${title}</h2>
-            ${description}`,
+            var html = template.html(sanitizedTitle, list, `
+            <h2>${sanitizedTitle}</h2>
+            ${sanitizeDescription}`,
             ` <a href="/create">create</a>
-              <a href="/update?id=${title}">update</a>
+              <a href="/update?id=${sanitizedTitle}">update</a>
               <form action="delete_process" method="post" onsubmit="">
-                <input type="hidden" name="id" value="${title}">
+                <input type="hidden" name="id" value="${sanitizedTitle}">
                 <input type="submit" value="delete">
               </form>
             `);
