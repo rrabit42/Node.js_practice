@@ -78,7 +78,7 @@ var app = http.createServer(function(request,response){
         var title = 'WEB - create'
         var list = templateList(filelist);
         var template = templateHTML(title, list, `
-          <form action="http://localhost:300/create_process" method="post">
+          <form action="http://localhost:3000/create_process" method="post">
           <p><input type="text" name="title" placeholder="title"></p>
           <p>
             <textarea name="description" placeholder="description"></textarea>
@@ -112,6 +112,12 @@ var app = http.createServer(function(request,response){
         var post = qs.parse(body); // 정보를 객체화
         var title = post.title;
         var description = post.description;
+        // 이미 그 title이 있으면 description만 수정 되드라!ㅎㅎ
+        fs.writeFile(`data/${title}`, description, 'utf8', function(err){
+          // 302: 페이지를 다른 곳으로 redirection 시켜라
+          response.writeHead(302,{Location: `/?id=${title}`});
+          response.end();
+        })
       });
     }
     else {
