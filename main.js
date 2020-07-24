@@ -1,8 +1,12 @@
-const express = require('express')
-const app = express()
+const express = require('express') // constant 상수, 바뀌지 않음, express 이름은 다른걸로 재정의 불가
+const app = express() // app에는 application이라는 객체가 담기도록 되어있음.
 
-app.get('/', (req, res) => res.send("Hello World!"))
+// route, routing : 기존의 node.js에서는 if문으로 처리함
+app.get('/', (req, res) => res.send("Hello World!")) // (path, callback[, callback...])
 
+app.get('/page', (req, res) => res.send("/page"))
+
+// listen이 실행될 때 비로소 웹서버가 실행됨. 해당 포트를 염.
 app.listen(3000, () => console.log('Example app listening on port 3000!'))
 
 /*
