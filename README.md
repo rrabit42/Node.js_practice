@@ -65,3 +65,18 @@ _**npm install -S sanitize-html**_
 
 Q. 우리는 sanitize-html만 깔았는데 node_modules에 있는 많은 디렉토리들은?  
 A. 그건 sanitize-html이 의존하고 있는 다른 소프트웨어들, 또 그것들이 다른 걸 의존하고 .... 이걸 npm이 관리하고 있는 것!  
+
+### 5. API(Application Programming Interface)  
+ex. ```fs.readFile(path[,options], callback)```: node.js를 만든 개발자들이 만든 파일을 읽어들이는 함수  
+node.js를 사용하는 개발자들의 약속된 조작장치 => **Interface**  
+interface를 조작함으로써 app을 만들 수 있게 됨. 이러한 인터페이스를 API라고 함.  
+
+ex. ```http.createServer([requestListener])```  
+http라는 모듈, 객체  
+createServer이라는 함수, 메소드(객체 안에 있을 때)  
+[]는 생략 가능한 파라미터  
+이 함수는 ```http.Server```라는 객체 반환  
+http.Server라는 API에 ```server.listen()```이 있음  
+[참고 문서](https://nodejs.org/dist/latest-v12.x/docs/api/)
+
+
