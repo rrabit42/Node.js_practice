@@ -84,4 +84,13 @@ createServer이라는 함수, 메소드(객체 안에 있을 때)
 http.Server라는 API에 ```server.listen()```이 있음  
 [참고 문서](https://nodejs.org/dist/latest-v12.x/docs/api/)
 
+# Express  
 
+### 1. 소개  
+node.js에서 가장 보편적으로 이용하는 프레임워크 중 하나  
+
+_**npm install express --save**_  
+npm을 이용해서 express라는 모듈을 로컬에 save하는 명령어  
+지금까지 node.js로 구현한 코드를 Express로 변환할 것이다.  
+
+코드를 다운받고 _**npm install**_ : ```package.json```에서 ```dependencies``` 항목들을 npm이 다운받아 ```npm_modules```라는 directory에 갖다 놓게됨
