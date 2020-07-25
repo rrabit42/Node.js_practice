@@ -2,6 +2,8 @@ const express = require('express') // constant 상수, 바뀌지 않음, express
 const app = express() // app에는 application이라는 객체가 담기도록 되어있음.
 const fs = require('fs');
 const template = require('./lib/template.js');
+const path = require('path');
+const sanitizeHtml = require('sanitize-html');
 
 // route, routing : 기존의 node.js에서는 if문으로 처리함
 app.get('/', (request, response) => {
@@ -15,10 +17,41 @@ app.get('/', (request, response) => {
           `, `<a href="/create">create</a>`);
     response.send(html)
   })
-
 }) // (path, callback[, callback...])
 
-app.get('/page', (req, res) => res.send("/page"))
+/*
+Route Parameters
+
+Route path: /users/:userId/books/:bookId
+Request URL: http://localhost:3000/users/34/books/8989
+req.params: { "userId": "34", "bookId": "8989" }
+*/
+app.get('/page/:pageId', (request, response) => {
+  fs.readdir('./data', function(error, filelist){
+    var filteredId = path.parse(request.params.pageId).base;
+
+    fs.readFile(`data/${filteredId}`, 'utf8', function(err, description){
+      var title = request.params.pageId
+      var sanitizedTitle = sanitizeHtml(title);
+      var sanitizeDescription = sanitizeHtml(description, {
+        allowedTags: ['h1']
+      });
+      var list = template.list(filelist);
+      
+      var html = template.html(sanitizedTitle, list, `
+      <h2>${sanitizedTitle}</h2>
+      ${sanitizeDescription}`,
+      ` <a href="/create">create</a>
+        <a href="/update?id=${sanitizedTitle}">update</a>
+        <form action="delete_process" method="post" onsubmit="">
+          <input type="hidden" name="id" value="${sanitizedTitle}">
+          <input type="submit" value="delete">
+        </form>
+      `);
+      response.send(html);
+    });
+  });
+})
 
 // listen이 실행될 때 비로소 웹서버가 실행됨. 해당 포트를 염.
 app.listen(3000, () => console.log('Example app listening on port 3000!'))
@@ -38,17 +71,6 @@ var app = http.createServer(function(request,response){
     var pathname = url.parse(_url, true).pathname
     if(pathname === '/'){
       if(queryData.id === undefined){
-        fs.readdir('./data', function(error, filelist){
-          var title = 'Welcome'
-          var description = 'Hello, Node.js'
-          var list = template.list(filelist);
-          var html = template.html(title, list, `
-            <h2>${title}</h2>
-            ${description}
-          `, `<a href="/create">create</a>`);
-          response.writeHead(200);
-          response.end(html);
-        });
       }
       else{
         fs.readdir('./data', function(error, filelist){
