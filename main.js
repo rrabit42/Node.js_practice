@@ -1,8 +1,22 @@
 const express = require('express') // constant 상수, 바뀌지 않음, express 이름은 다른걸로 재정의 불가
 const app = express() // app에는 application이라는 객체가 담기도록 되어있음.
+const fs = require('fs');
+const template = require('./lib/template.js');
 
 // route, routing : 기존의 node.js에서는 if문으로 처리함
-app.get('/', (req, res) => res.send("Hello World!")) // (path, callback[, callback...])
+app.get('/', (request, response) => {
+  fs.readdir('./data', function(error, filelist){
+    var title = 'Welcome';
+    var description = 'Hello, Node.js';
+    var list = template.list(filelist);
+    var html = template.html(title, list, `
+            <h2>${title}</h2>
+            ${description}
+          `, `<a href="/create">create</a>`);
+    response.send(html)
+  })
+
+}) // (path, callback[, callback...])
 
 app.get('/page', (req, res) => res.send("/page"))
 
