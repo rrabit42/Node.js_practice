@@ -5,6 +5,19 @@ const template = require('./lib/template.js');
 const path = require('path');
 const sanitizeHtml = require('sanitize-html');
 const qs = require('querystring');
+var bodyParser = require('body-parser');
+
+// parse application/x-www-form-urlencoded
+/*
+  bodyParser가 만들어내는 미들웨어를 사용하겠다는 뜻
+  main.js가 실행될 때마다, 즉 사용자가 요청할 때 마다 미들웨어가 실행됨.
+  사용자가 보낸 post 데이터를 분석해서 우리가 기존에 써준 콜백 함수를 호출하도록 되어있음
+  request에 body라는 property를 만들어줌!!
+*/
+app.use(bodyParser.urlencoded({ extended: false }));
+
+// parse application/json
+// app.use(bodyParser.json())
 
 // route, routing : 기존의 node.js에서는 if문으로 처리함
 app.get('/', (request, response) => {
@@ -78,6 +91,7 @@ app.get('/create', (request, response) => {
 // 아래 이 함수의 path를 '/create'라고 하면
 // get-create path와 post-create path 두개 중 method가 post인걸로 자동으로 이동한다! => 이렇게 해도 됨!
 app.post('/create_process', (request, response) => {
+  /*
   var body = '';
   request.on('data', function(data){
     body += data;
@@ -89,6 +103,12 @@ app.post('/create_process', (request, response) => {
     fs.writeFile(`data/${title}`, description, 'utf8', function(err){
       response.redirect(`/page/${title}`);
     })
+  */
+  var post = request.body;
+  var title = post.title;
+  var description = post.description;
+  fs.writeFile(`data/${title}`, description, 'utf8', function(err){
+    response.redirect(`/page/${title}`);
   });
 })
 
@@ -119,36 +139,24 @@ app.get('/update/:pageId', (request, response) => {
 })
 
 app.post('/update_process', (request, response) => {
-  var body = '';
-  request.on('data', function(data){
-    body += data;
-  });
-  request.on('end', function(){
-    var post = qs.parse(body);
-    var id = post.id
-    var title = post.title;
-    var description = post.description;
-    fs.rename(`data/${id}`, `data/${title}`, function(error){
-      fs.writeFile(`data/${title}`, description, 'utf8', function(err){
-        response.redirect(`/page/${title}`);
-      });
+  var post = request.body;
+  var id = post.id
+  var title = post.title;
+  var description = post.description;
+  fs.rename(`data/${id}`, `data/${title}`, function(error){
+    fs.writeFile(`data/${title}`, description, 'utf8', function(err){
+      response.redirect(`/page/${title}`);
     });
   });
 })
 
 app.post('/delete_process', (request, response) => {
-  var body = '';
-  request.on('data', function(data){
-    body += data;
-  });
-  request.on('end', function(){
-    var post = qs.parse(body);
-    var id = post.id
-    var filteredId = path.parse(id).base;
-    fs.unlink(`data/${filteredId}`, function(error){
-      response.redirect('/');
-    })
-  });
+  var post = request.body;
+  var id = post.id
+  var filteredId = path.parse(id).base;
+  fs.unlink(`data/${filteredId}`, function(error){
+    response.redirect('/');
+  })
 })
 
 // listen이 실행될 때 비로소 웹서버가 실행됨. 해당 포트를 염.
