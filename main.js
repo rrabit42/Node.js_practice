@@ -8,6 +8,9 @@ const qs = require('querystring');
 var bodyParser = require('body-parser');
 var compression = require('compression');
 
+// Serving static files in Express
+app.use(express.static('public')); // public directory 안에서 static files를 찾겠다. 파일을 url 통해서 접근, 그 외에는 접근 X -> 훨씬 안전
+
 // parse application/x-www-form-urlencoded
 /*
   bodyParser가 만들어내는 미들웨어를 사용하겠다는 뜻
@@ -38,6 +41,7 @@ app.get('/', (request, response) => {
   var html = template.html(title, list, `
           <h2>${title}</h2>
           ${description}
+          <img src="/images/hello.jpg" style="width:300px; display:block; margin-top:10px;">
         `, `<a href="/create">create</a>`);
   response.send(html)
 }) // (path, callback[, callback...])
