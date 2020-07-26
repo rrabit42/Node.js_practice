@@ -6,6 +6,7 @@ const path = require('path');
 const sanitizeHtml = require('sanitize-html');
 const qs = require('querystring');
 var bodyParser = require('body-parser');
+var compression = require('compression');
 
 // parse application/x-www-form-urlencoded
 /*
@@ -15,6 +16,8 @@ var bodyParser = require('body-parser');
   request에 body라는 property를 만들어줌!!
 */
 app.use(bodyParser.urlencoded({ extended: false }));
+// compression() 함수가 middleware를 리턴하고, app.use를 통해 미들웨어가 장착됨
+app.use(compression());
 
 // parse application/json
 // app.use(bodyParser.json())
