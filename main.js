@@ -53,26 +53,30 @@ Route path: /users/:userId/books/:bookId
 Request URL: http://localhost:3000/users/34/books/8989
 req.params: { "userId": "34", "bookId": "8989" }
 */
-app.get('/page/:pageId', (request, response) => {
+app.get('/page/:pageId', (request, response, next) => {
   var filteredId = path.parse(request.params.pageId).base;
   fs.readFile(`data/${filteredId}`, 'utf8', function(err, description){
-    var title = request.params.pageId
-    var sanitizedTitle = sanitizeHtml(title);
-    var sanitizeDescription = sanitizeHtml(description, {
-      allowedTags: ['h1']
-    });
-    var list = template.list(request.list);
-    var html = template.html(sanitizedTitle, list, `
-    <h2>${sanitizedTitle}</h2>
-    ${sanitizeDescription}`,
-    ` <a href="/create">create</a>
-      <a href="/update/${sanitizedTitle}">update</a>
-      <form action="/delete_process" method="post" onsubmit="">
-        <input type="hidden" name="id" value="${sanitizedTitle}">
-        <input type="submit" value="delete">
-      </form>
-    `);
-    response.send(html);
+    if(err){
+      next(err);
+    } else {
+      var title = request.params.pageId
+      var sanitizedTitle = sanitizeHtml(title);
+      var sanitizeDescription = sanitizeHtml(description, {
+        allowedTags: ['h1']
+      });
+      var list = template.list(request.list);
+      var html = template.html(sanitizedTitle, list, `
+      <h2>${sanitizedTitle}</h2>
+      ${sanitizeDescription}`,
+      ` <a href="/create">create</a>
+        <a href="/update/${sanitizedTitle}">update</a>
+        <form action="/delete_process" method="post" onsubmit="">
+          <input type="hidden" name="id" value="${sanitizedTitle}">
+          <input type="submit" value="delete">
+        </form>
+      `);
+      response.send(html);
+    }
   });
 })
 
@@ -162,6 +166,16 @@ app.post('/delete_process', (request, response) => {
   fs.unlink(`data/${filteredId}`, function(error){
     response.redirect('/');
   })
+})
+
+app.use(function(req, res, next){
+  res.status(404).send('Sorry cant find that!');
+}) // 미들웨어는 순차적으로 실행이 되기 때문에, 순차적으로 실행하고 없는게 404가 뜨도록!
+
+// 이렇게 인자 네개(err, req, res, next)를 가진 function은 에러처리하는 함수로 하자! 라고 약속함.
+app.use(function(err, req, res, next){
+  console.error(err.stack)
+  res.status(500).send('Something broke!');
 })
 
 // listen이 실행될 때 비로소 웹서버가 실행됨. 해당 포트를 염.
