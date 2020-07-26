@@ -102,4 +102,76 @@ npm을 이용해서 express라는 모듈을 로컬에 save하는 명령어
 #### (2) Middleware  
 Third-party middleware : Express.js에서가 아닌 다른 사람들이 만든 미들웨어  
 ex. body-parser  
-- 웹브라우저에서 요청한 정보의 본체를 *body*라고 하고 그 본체를 설명하는게 *header*
+- 웹브라우저에서 요청한 정보의 본체를 *body*라고 하고 그 본체를 설명하는게 *header*  
+
+##### Middleware의 종류  
+- Application-level middleware  
+지금까지 우리가 사용한 미들웨어. app이라는 변수에 application 객체가 담겨있는데, use, get 등의 방식을 통해서 미들웨어를 등록하여 사용.  
+
+**[사용법](https://expressjs.com/en/guide/using-middleware.html)**  
+```
+var app = express()
+
+// function은 middleware로서 등록되는 것
+// middleware로서의 역할: request, response를 받아서 그것을 변형함
+app.use(function (req, res, next) {
+  console.log('Time:', Date.now())
+  next() // 그 다음에 실행되어야 할 미들웨어, 그 미들웨어의 실행여부는 그 이전 미들웨어가 결정
+})
+```
+```
+// 특정 경로에만 middleware가 동작하도록 지정 가능
+app.use('/user/:id', function (req, res, next) {
+  console.log('Request Type:', req.method)
+  next()
+})
+```
+```
+// 특정 메소드(ex. get)에서만 middleware가 동작하도록 지정 가능
+app.use('/user/:id', function (req, res, next) {
+  res.send('USER')
+})
+```
+```
+// 인자로 함수를 연속적으로 주면서 middleware를 여러개 붙일 수 있음
+// 첫번째 함수의 next()는 그 다음 function을 호출하는거와 다름 없음
+app.use('/user/:id', function (req, res, next) {
+  console.log('Request URL:', req.originalUrl)
+  next()
+}.function (req, res, next) {
+  console.log('Request Type:', req.method)
+  next()
+})
+```
+```
+app.get('/user/:id', function (req, res, next) {
+  console.log('ID:', req.params.id)
+  next()
+}, function (req, res, next) {
+  res.send('User Info')
+}) // 여기에서 해당 경로의 요청이 끝남! next()가 없으므로!
+
+app.get('/user/:id', function (req, res, next) {
+  res.end(req.params.id)
+})
+
+app.get('/user/:id', function (req, res, next) {
+  // if the user ID is 0, skip to the next route
+  if (req.params.id === '0') next('route') // 이는 다음 라우터의 미들웨어를 사용하라는 뜻이므로 '미들웨어2'가 실행됨
+  // otherwise pass the control to the next middleware function in this stack
+  else next() // else는 인자가 없는 next()이므로 이 바로 다음의 function이 실행됨
+}, function (req, res, next) {
+  // send a regular response
+  res.send('regular')
+})
+
+// '미들웨어2'
+app.get('/user/:id', function (req, res, next) {
+  res.send('special')
+})
+```
+- Router-level middleware  
+- Error-handling middleware  
+- Built-in middleware  
+- Third-party middleware  
+이것도 우리는 app에 등록해서 사용
