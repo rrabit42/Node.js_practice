@@ -44,7 +44,7 @@ app.get('/page/:pageId', (request, response) => {
       ${sanitizeDescription}`,
       ` <a href="/create">create</a>
         <a href="/update/${sanitizedTitle}">update</a>
-        <form action="delete_process" method="post" onsubmit="">
+        <form action="/delete_process" method="post" onsubmit="">
           <input type="hidden" name="id" value="${sanitizedTitle}">
           <input type="submit" value="delete">
         </form>
@@ -87,8 +87,7 @@ app.post('/create_process', (request, response) => {
     var title = post.title;
     var description = post.description;
     fs.writeFile(`data/${title}`, description, 'utf8', function(err){
-      response.writeHead(302,{Location: `/page/${title}`});
-      response.end();
+      response.redirect(`/page/${title}`);
     })
   });
 })
@@ -131,10 +130,24 @@ app.post('/update_process', (request, response) => {
     var description = post.description;
     fs.rename(`data/${id}`, `data/${title}`, function(error){
       fs.writeFile(`data/${title}`, description, 'utf8', function(err){
-        response.writeHead(302,{Location: `/page/${title}`});
-        response.end();
+        response.redirect(`/page/${title}`);
       });
     });
+  });
+})
+
+app.post('/delete_process', (request, response) => {
+  var body = '';
+  request.on('data', function(data){
+    body += data;
+  });
+  request.on('end', function(){
+    var post = qs.parse(body);
+    var id = post.id
+    var filteredId = path.parse(id).base;
+    fs.unlink(`data/${filteredId}`, function(error){
+      response.redirect('/');
+    })
   });
 })
 
@@ -169,19 +182,6 @@ var app = http.createServer(function(request,response){
     else if(pathname === '/update_process'){
     }
     else if(pathname === '/delete_process'){
-      var body = '';
-      request.on('data', function(data){
-        body += data;
-      });
-      request.on('end', function(){
-        var post = qs.parse(body);
-        var id = post.id
-        var filteredId = path.parse(id).base;
-        fs.unlink(`data/${filteredId}`, function(error){
-          response.writeHead(302,{Location: `/`});
-          response.end();
-        })
-      });
     }
     else {
       response.writeHead(404);
