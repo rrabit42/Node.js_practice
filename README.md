@@ -93,4 +93,13 @@ _**npm install express --save**_
 npm을 이용해서 express라는 모듈을 로컬에 save하는 명령어  
 지금까지 node.js로 구현한 코드를 Express로 변환할 것이다.  
 
-코드를 다운받고 _**npm install**_ : ```package.json```에서 ```dependencies``` 항목들을 npm이 다운받아 ```npm_modules```라는 directory에 갖다 놓게됨
+코드를 다운받고 _**npm install**_ : ```package.json```에서 ```dependencies``` 항목들을 npm이 다운받아 ```npm_modules```라는 directory에 갖다 놓게됨  
+
+### 2. 주요 특징  
+#### (1) Route  
+
+
+#### (2) Middleware  
+Third-party middleware : Express.js에서가 아닌 다른 사람들이 만든 미들웨어  
+ex. body-parser  
+- 웹브라우저에서 요청한 정보의 본체를 *body*라고 하고 그 본체를 설명하는게 *header*
