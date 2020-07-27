@@ -1,9 +1,9 @@
 const express = require('express') // constant 상수, 바뀌지 않음, express 이름은 다른걸로 재정의 불가
 const app = express() // app에는 application이라는 객체가 담기도록 되어있음.
 const fs = require('fs');
-const template = require('./lib/template.js');
 var bodyParser = require('body-parser');
 var compression = require('compression');
+var indexRouter = require('./routes/index')
 var topicRouter = require('./routes/topic')
 
 // Serving static files in Express
@@ -33,20 +33,8 @@ app.get('*', function(request, response, next){
 
 // topic으로 시작하는 주소들에게 topicRouter라는 미들웨어를 적용하겠다.
 // 그럼 라우터 경로에 /topic은 생략해도됨!
+app.use('/', indexRouter)
 app.use('/topic', topicRouter)
-
-// route, routing : 기존의 node.js에서는 if문으로 처리함
-app.get('/', (request, response) => {
-  var title = 'Welcome';
-  var description = 'Hello, Node.js';
-  var list = template.list(request.list);
-  var html = template.html(title, list, `
-          <h2>${title}</h2>
-          ${description}
-          <img src="/images/hello.jpg" style="width:300px; display:block; margin-top:10px;">
-        `, `<a href="/topic/create">create</a>`);
-  response.send(html)
-}) // (path, callback[, callback...])
 
 app.use(function(req, res, next){
   res.status(404).send('Sorry cant find that!');
@@ -61,40 +49,3 @@ app.use(function(err, req, res, next){
 
 // listen이 실행될 때 비로소 웹서버가 실행됨. 해당 포트를 염.
 app.listen(3000, () => console.log('Example app listening on port 3000!'))
-
-/*
-var http = require('http');
-var fs = require('fs');
-var url = require('url');
-var qs = require('querystring');
-var template = require('./lib/template.js');
-var path = require('path');
-var sanitizeHtml = require('sanitize-html');
-
-var app = http.createServer(function(request,response){
-    var _url = request.url;
-    var queryData = url.parse(_url, true).query;
-    var pathname = url.parse(_url, true).pathname
-    if(pathname === '/'){
-      if(queryData.id === undefined){
-      }
-      else{
-      }
-    }
-    else if(pathname === '/create'){
-    }
-    else if(pathname === '/create_process'){
-    }
-    else if(pathname === '/update'){
-    }
-    else if(pathname === '/update_process'){
-    }
-    else if(pathname === '/delete_process'){
-    }
-    else {
-      response.writeHead(404);
-      response.end('Not found');
-    }
-});
-app.listen(3000);
-*/
