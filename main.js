@@ -3,6 +3,9 @@ const app = express() // app에는 application이라는 객체가 담기도록 �
 const fs = require('fs');
 var bodyParser = require('body-parser');
 var compression = require('compression');
+var helmet = require('helmet')
+app.use(helmet()) // 헬멧이 자동으로 우리의 app을 잘 보호해줌
+
 var indexRouter = require('./routes/index')
 var topicRouter = require('./routes/topic')
 
