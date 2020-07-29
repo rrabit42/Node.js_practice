@@ -8,9 +8,7 @@ var sanitizeHtml = require('sanitize-html');
 var mysql = require('mysql');
 var db = mysql.createConnection({
   host     : 'localhost',
-  user     : 'user',
-  password : 'pw',
-  database : 'db'
+  //보안
 });
 db.connect();
 
@@ -32,23 +30,50 @@ var app = http.createServer(function(request,response){
           response.end(html);
         });
       } else {
-        fs.readdir('./data', function(error, filelist){
-          var filteredId = path.parse(queryData.id).base;
-          fs.readFile(`data/${filteredId}`, 'utf8', function(err, description){
-            var title = queryData.id;
-            var sanitizedTitle = sanitizeHtml(title);
-            var sanitizedDescription = sanitizeHtml(description, {
-              allowedTags:['h1']
-            });
-            var list = template.list(filelist);
-            var html = template.HTML(sanitizedTitle, list,
-              `<h2>${sanitizedTitle}</h2>${sanitizedDescription}`,
-              ` <a href="/create">create</a>
-                <a href="/update?id=${sanitizedTitle}">update</a>
-                <form action="delete_process" method="post">
-                  <input type="hidden" name="id" value="${sanitizedTitle}">
-                  <input type="submit" value="delete">
-                </form>`
+        // fs.readdir('./data', function(error, filelist){
+        //   var filteredId = path.parse(queryData.id).base;
+        //   fs.readFile(`data/${filteredId}`, 'utf8', function(err, description){
+        //     var title = queryData.id;
+        //     var sanitizedTitle = sanitizeHtml(title);
+        //     var sanitizedDescription = sanitizeHtml(description, {
+        //       allowedTags:['h1']
+        //     });
+        //     var list = template.list(filelist);
+        //     var html = template.HTML(sanitizedTitle, list,
+        //       `<h2>${sanitizedTitle}</h2>${sanitizedDescription}`,
+        //       ` <a href="/create">create</a>
+        //         <a href="/update?id=${sanitizedTitle}">update</a>
+        //         <form action="delete_process" method="post">
+        //           <input type="hidden" name="id" value="${sanitizedTitle}">
+        //           <input type="submit" value="delete">
+        //         </form>`
+        //     );
+        //     response.writeHead(200);
+        //     response.end(html);
+        //   });
+        // });
+        db.query(`SELECT * FROM topic`, function(error, topics){
+          if(error){
+            throw error; // 에러를 콘솔에 던지고 즉시 프로그램 종료
+          }
+          // sql injection 방지를 위해 아래와 같이 query 작성
+          // [..]의 내용이 sql문의 ?에 자동 치환돼서 들어감
+          db.query(`SELECT * FROM topic WHERE id=?`, [queryData.id], function(error2, topic){
+            if(error2){
+              throw error2;
+            }
+            var title = topic[0].title; // topic은 RowDataPacket{} 이라는 객체의 리스트를 반환함, 그 리스트에는 id값에 해당하는 객체가 1개 밖에 안들어 있으니까 [0]으로 객체 가져와서 하는것!
+            var description = topic[0].description;
+            var list = template.list(topics);
+            var html = template.HTML(title, list,
+              `<h2>${title}</h2>${description}`,
+              `<a href="/create">create</a>
+              <a href="/create">create</a>
+              <a href="/update?id=${queryData.id}}">update</a>
+              <form action="delete_process" method="post">
+                <input type="hidden" name="id" value="${queryData.id}">
+                <input type="submit" value="delete">
+              </form>`
             );
             response.writeHead(200);
             response.end(html);
