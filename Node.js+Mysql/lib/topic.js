@@ -28,6 +28,17 @@ exports.page = function(request, response){
   if(error){
     throw error;
   }
+  // []를 쓰면 querystring을 ''안에 넣어줌. 즉, 문자열로 치환됨! 따라서 sql injection 공격을 query문이 아닌 문자열로 치환하니까 어느정도 보호 가능!
+  // db.query method는 여러 sql문이 처리되는 것을 방지함
+  // 여러 sql문이 처리되게 하려면
+  /*
+    mysql.createConnection({
+      ...,
+      multipleStatements:true
+    })
+  */
+ // 그 외 sql injection 보호 기법
+ // `...WHERE topic.id=${db.escape(queryData.id)}`
   db.query(`SELECT * FROM topic LEFT JOIN author ON topic.author_id = author.id WHERE topic.id=?`, [queryData.id], function(error2, topic){
     if(error2){
       throw error2;
