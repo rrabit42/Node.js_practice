@@ -36,7 +36,7 @@ var app = http.createServer(function(request,response){
           }
           // sql injection 방지를 위해 아래와 같이 query 작성
           // [..]의 내용이 sql문의 ?에 자동 치환돼서 들어감
-          db.query(`SELECT * FROM topic WHERE id=?`, [queryData.id], function(error2, topic){
+          db.query(`SELECT * FROM topic LEFT JOIN author ON topic.author_id = author.id WHERE topic.id=?`, [queryData.id], function(error2, topic){
             if(error2){
               throw error2;
             }
@@ -44,7 +44,10 @@ var app = http.createServer(function(request,response){
             var description = topic[0].description;
             var list = template.list(topics);
             var html = template.HTML(title, list,
-              `<h2>${title}</h2>${description}`,
+              `<h2>${title}</h2>
+              ${description}
+              <p> by ${topic[0].name} </p>
+              `,
               `<a href="/create">create</a>
               <a href="/update?id=${queryData.id}">update</a>
               <form action="delete_process" method="post">
