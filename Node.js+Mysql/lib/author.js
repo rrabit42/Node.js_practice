@@ -1,5 +1,6 @@
 var url = require('url');
 var qs = require('querystring');
+var sanitizeHTML = require('sanitize-html');
 
 var db = require('./db')
 var template = require('./template.js');
@@ -87,10 +88,10 @@ exports.update = function(request, response){
               <input type="hidden" name="id", value="${queryData.id}">
             </p>
             <p>
-              <input type="text" name="name" value="${author[0].name}">
+              <input type="text" name="name" value="${sanitizeHTML(author[0].name)}">
             </p>
             <p>
-              <textarea name="profile">${author[0].profile}</textarea>
+              <textarea name="profile">${sanitizeHTML(author[0].profile)}</textarea>
             </p>
             <p>
               <input type="submit" value="update">
