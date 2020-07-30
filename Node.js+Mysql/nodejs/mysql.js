@@ -2,9 +2,9 @@
 var mysql = require('mysql');
 var connection = mysql.createConnection({
   host     : 'localhost', // database서버가 어떤 컴퓨터에 있는가, mysql과 node가 같은 서버에 있으면 localhost
-  user     : 'me',
-  password : 'secret',
-  database : 'my_db'
+  user     : '',
+  password : '',
+  database : ''
 });
 
 connection.connect();
