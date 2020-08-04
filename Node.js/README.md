@@ -128,7 +128,7 @@ app.use('/user/:id', function (req, res, next) {
 ```
 ```
 // 특정 메소드(ex. get)에서만 middleware가 동작하도록 지정 가능
-app.use('/user/:id', function (req, res, next) {
+app.get('/user/:id', function (req, res, next) {
   res.send('USER')
 })
 ```
